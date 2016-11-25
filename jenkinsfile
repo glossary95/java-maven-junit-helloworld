@@ -1,0 +1,16 @@
+node{
+    git credentialsId: '60c6a295-474e-4e66-a782-fa6e9711babe', url: 'https://github.com/glossary95/java-maven-junit-helloworld'
+    checkout scm
+    stage('Set Github Status')
+    setBuildStatus("Build complete", "SUCCESS")
+}
+
+def setBuildStatus(message,state){
+  step([
+      $class: "GitHubCommitStatusSetter",
+      reposSource: [$class: "ManuallyEnteredRepositorySource", url: "https://github.com/glossary95/java-maven-junit-helloworld"],
+      contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "ci/jenkins/build-status"],
+      errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
+      statusResultSource: [ $class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: message, state: state]] ]
+  ])
+}
